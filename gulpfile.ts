@@ -248,6 +248,23 @@ export const watchSass = gulp.series(sass, async function watchSass(): Promise<v
     })
 })
 
+const PHABRICATOR_EXTENSION_FILES = './node_modules/@sourcegraph/phabricator-extension/dist/**'
+
+/**
+ * Copies the bundles from the `@sourcegraph/phabricator-extension` package over to the ui/assets
+ * folder so they can be served by the webapp.
+ * The package is published from https://github.com/sourcegraph/browser-extensions
+ */
+export function phabricator(): NodeJS.ReadWriteStream {
+    return gulp.src(PHABRICATOR_EXTENSION_FILES).pipe(gulp.dest('./ui/assets/extension'))
+}
+
+export const watchPhabricator = gulp.series(phabricator, async function watchPhabricator(): Promise<void> {
+    await new Promise<never>((_, reject) => {
+        gulp.watch(PHABRICATOR_EXTENSION_FILES, phabricator).on('error', reject)
+    })
+})
+
 /**
  * Builds only the dist/ folder.
  */
@@ -263,7 +280,7 @@ export const watchDist = gulp.series(
  */
 export const build = gulp.parallel(
     sass,
-    gulp.series(gulp.parallel(schema, graphQLTypes), gulp.parallel(webpack, typescript))
+    gulp.series(gulp.parallel(schema, graphQLTypes), gulp.parallel(webpack, typescript, phabricator))
 )
 
 /**
@@ -272,7 +289,7 @@ export const build = gulp.parallel(
 export const watch = gulp.series(
     // Ensure the typings that TypeScript depends on are build to avoid first-time-run errors
     gulp.parallel(schema, graphQLTypes),
-    gulp.parallel(watchSass, watchSchema, watchGraphQLTypes, watchTypescript, webpackServe)
+    gulp.parallel(watchSass, watchSchema, watchGraphQLTypes, watchTypescript, webpackServe, watchPhabricator)
 )
 
 /**

@@ -948,6 +948,11 @@
     string-score "^1.0.1"
     ts-key-enum "^2.0.0"
 
+"@sourcegraph/phabricator-extension@^1.18.0":
+  version "1.18.0"
+  resolved "https://registry.yarnpkg.com/@sourcegraph/phabricator-extension/-/phabricator-extension-1.18.0.tgz#238be49e449fe7f773e6ff6881e3c480a5e6aaed"
+  integrity sha512-V6VvLyzPo9fqGY1il0krQ5Xs2c60dnL7CEvtQMuvP8RglYu4wiEbxXkC8r+qKrF0cS8caFpQK8Tg88ZANQkUYQ==
+
 "@sourcegraph/prettierrc@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@sourcegraph/prettierrc/-/prettierrc-2.2.0.tgz#af4a6fcd465b0a39a07ffbd8f2d3414d01e603e8"
@@ -1478,6 +1483,14 @@
     "@types/history" "*"
     "@types/react" "*"
 
+"@types/react-stripe-elements@^1.1.7":
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/@types/react-stripe-elements/-/react-stripe-elements-1.1.7.tgz#edba2667b1a10a70862801a0c8a8973f7cb8672c"
+  integrity sha512-s4t5oVM3uTQGExHo0wOJJ2J1dHb2hTx4X8wY5UNi1X6qP1WKh/2tV70hra5P7cgFp4SKrohxiZWlP7OzWQIlvA==
+  dependencies:
+    "@types/react" "*"
+    "@types/stripe-v3" "*"
+
 "@types/react@*", "@types/react@16.4.14":
   version "16.4.14"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.4.14.tgz#47c604c8e46ed674bbdf4aabf82b34b9041c6a04"
@@ -1511,6 +1524,11 @@
   dependencies:
     "@types/express-serve-static-core" "*"
     "@types/mime" "*"
+
+"@types/stripe-v3@*":
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/@types/stripe-v3/-/stripe-v3-3.0.8.tgz#9c2816acf34dcf0948236fc81ce99442344ebfb4"
+  integrity sha512-66qa6x17+HCqc/tRTwYqSOYHsSAoGPAr4gLJFIQwY/em1JjePDXa2lcBqB3mUrVuMhFyn/CP4fJy2yIE6gwqjw==
 
 "@types/tapable@*":
   version "1.0.4"
@@ -8915,7 +8933,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@^15.5.8, prop-types@^15.6.1, prop-types@^15.6.2:
+prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.1, prop-types@^15.6.2:
   version "15.6.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.6.2.tgz#05d5ca77b4453e985d60fc7ff8c859094a497102"
   integrity sha512-3pboPvLiWD7dkI3qf3KbUe6hKFKa52w+AE0VCqECtf+QHAKgOL37tTaNCnuX1nAAQ4ZhyP+kYVKf8rLmJ/feDQ==
@@ -9136,6 +9154,13 @@ react-router@^4.3.1:
     path-to-regexp "^1.7.0"
     prop-types "^15.6.1"
     warning "^4.0.1"
+
+react-stripe-elements@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/react-stripe-elements/-/react-stripe-elements-2.0.1.tgz#197db4762c57bf73a07d852564ebdbac52954094"
+  integrity sha512-P70Yd55FZGgOChvgSyegPOisfc/5kWVucYvb9je9RhTMm44fY5Q0yQz9yL0kLcYfCPkJWVmXl6Ex7FiMEuAdtg==
+  dependencies:
+    prop-types "^15.5.10"
 
 react-transition-group@^2.3.1:
   version "2.5.0"
