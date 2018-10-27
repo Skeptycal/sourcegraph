@@ -1,7 +1,14 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "rootDir": ".."
+    "rootDir": "..",
+    "preserveSymlinks": true,
+    "baseUrl": "..",
+    "paths": {
+      "@sourcegraph/webapp/dist/*": ["src/*"]
+    },
+    "typeRoots": ["../node_modules/@types", "../src/types"]
   },
-  "include": ["../src/**/*", "../*.ts", "src/**/*", "*.ts"]
+  "include": ["src/**/*", "*.ts", "../src/**/*", "../*.ts"],
+  "exclude": ["../node_modules"]
 }
