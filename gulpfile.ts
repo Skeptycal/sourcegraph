@@ -1,6 +1,5 @@
 import { generateNamespace } from '@gql2ts/from-schema'
 import { DEFAULT_OPTIONS, DEFAULT_TYPE_MAP } from '@gql2ts/language-typescript'
-import { ChildProcess, spawn } from 'child_process'
 import execa from 'execa'
 import log from 'fancy-log'
 import globby from 'globby'
@@ -161,11 +160,6 @@ export async function schema(): Promise<void> {
                 writeFile(__dirname + `/src/schema/${file}.schema.d.ts`, types),
                 // Copy schema to src/ so it can be imported in TypeScript
                 writeFile(__dirname + `/src/schema/${file}.schema.json`, schema),
-                // Copy schema to dist/ so it's part of the dist package
-                // This would not be needed with tsconfig `resolevJsonModule: true`,
-                // but we cannot enable that because of https://github.com/Microsoft/TypeScript/issues/25755
-                // and TS3.1 has blocking compiler bugs
-                writeFile(__dirname + `/dist/schema/${file}.schema.json`, schema),
             ])
         })
     )
@@ -211,43 +205,6 @@ export async function unusedExports(): Promise<void> {
     }
 }
 
-/**
- * Builds and typechecks the TypeScript code, outputting compiled JavaScript, declaration files and sourcemaps to dist/
- */
-export function typescript(): ChildProcess {
-    return spawn(__dirname + '/node_modules/.bin/tsc', ['-p', __dirname + '/tsconfig.dist.json', '--pretty'], {
-        stdio: 'inherit',
-        shell: true,
-    })
-}
-
-export function watchTypescript(): ChildProcess {
-    return spawn(
-        __dirname + '/node_modules/.bin/tsc',
-        ['-p', __dirname + '/tsconfig.dist.json', '--watch', '--preserveWatchOutput', '--pretty'],
-        {
-            stdio: 'inherit',
-            shell: true,
-        }
-    )
-}
-
-const SASS_FILES = './src/**/*.scss'
-
-/**
- * Copies the .scss files from src/ to dist/.
- * These are not precompiled so that they can be imported individually and variables be set.
- */
-export function sass(): NodeJS.ReadWriteStream {
-    return gulp.src(SASS_FILES).pipe(gulp.dest('./dist'))
-}
-
-export const watchSass = gulp.series(sass, async function watchSass(): Promise<void> {
-    await new Promise<never>((_, reject) => {
-        gulp.watch(SASS_FILES, sass).on('error', reject)
-    })
-})
-
 const PHABRICATOR_EXTENSION_FILES = './node_modules/@sourcegraph/phabricator-extension/dist/**'
 
 /**
@@ -266,21 +223,10 @@ export const watchPhabricator = gulp.series(phabricator, async function watchPha
 })
 
 /**
- * Builds only the dist/ folder.
- */
-export const dist = gulp.parallel(sass, gulp.series(gulp.parallel(schema, graphQLTypes), typescript))
-export const watchDist = gulp.series(
-    // Ensure the typings that TypeScript depends on are build to avoid first-time-run errors
-    gulp.parallel(schema, graphQLTypes),
-    gulp.parallel(watchSass, watchSchema, watchGraphQLTypes, watchTypescript)
-)
-
-/**
  * Builds everything.
  */
 export const build = gulp.parallel(
-    sass,
-    gulp.series(gulp.parallel(schema, graphQLTypes), gulp.parallel(webpack, typescript, phabricator))
+    gulp.series(gulp.parallel(schema, graphQLTypes), gulp.parallel(webpack, phabricator))
 )
 
 /**
@@ -289,7 +235,7 @@ export const build = gulp.parallel(
 export const watch = gulp.series(
     // Ensure the typings that TypeScript depends on are build to avoid first-time-run errors
     gulp.parallel(schema, graphQLTypes),
-    gulp.parallel(watchSass, watchSchema, watchGraphQLTypes, watchTypescript, webpackServe, watchPhabricator)
+    gulp.parallel(watchSchema, watchGraphQLTypes, webpackServe, watchPhabricator)
 )
 
 /**

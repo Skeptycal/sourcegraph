@@ -2,12 +2,12 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "rootDir": "..",
-    "preserveSymlinks": true,
     "baseUrl": "..",
     "paths": {
       "@sourcegraph/webapp/dist/*": ["src/*"]
     },
-    "typeRoots": ["../node_modules/@types", "../src/types"]
+    "typeRoots": ["../node_modules/@types", "../src/types"],
+    "jsx": "react"
   },
   "include": ["src/**/*", "*.ts", "../src/**/*", "../*.ts"],
   "exclude": ["../node_modules"]

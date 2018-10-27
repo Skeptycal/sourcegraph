@@ -15,21 +15,23 @@ const monacoEditorPaths = [path.resolve(__dirname, 'node_modules', 'monaco-edito
 // determine whether we are in watch mode. This just means that if you use a different tool's watch
 // mode (other than webpack-serve), your workers will be reclaimed frequently and it'll be a bit
 // slower until you add support here.
-const usingWebpackServe = Boolean(process.env.WEBPACK_SERVE)
-const workerPool = {
+// const usingWebpackServe = Boolean(process.env.WEBPACK_SERVE)
+/* const workerPool = {
     poolTimeout: usingWebpackServe ? Infinity : 2000,
 }
 const workerPoolSCSS = {
     workerParallelJobs: 2,
     poolTimeout: usingWebpackServe ? Infinity : 2000,
 }
-
+ */
 const babelLoader: webpack.RuleSetUseItem = {
     loader: 'babel-loader',
     options: {
         cacheDirectory: true,
     },
 }
+
+const srcRoot = process.env.ENTERPRISE ? path.join(__dirname, 'enterprise', 'src') : path.join(__dirname, 'src')
 
 const typescriptLoader: webpack.RuleSetUseItem = {
     loader: 'ts-loader',
@@ -61,10 +63,12 @@ const config: webpack.Configuration = {
         ],
     },
     entry: {
-        app: path.join(__dirname, 'src/main.tsx'),
-        style: path.join(__dirname, 'src/main.scss'),
-        'editor.worker': 'monaco-editor/esm/vs/editor/editor.worker.js',
-        'json.worker': 'monaco-editor/esm/vs/language/json/json.worker',
+        app: path.join(srcRoot, 'main.tsx'),
+        // TODO(sqs): uncomment
+        //
+        // style: path.join(__dirname, 'src/main.scss'),
+        // 'editor.worker': 'monaco-editor/esm/vs/editor/editor.worker.js',
+        // 'json.worker': 'monaco-editor/esm/vs/language/json/json.worker',
     },
     output: {
         path: path.join(__dirname, 'ui', 'assets'),
@@ -94,18 +98,18 @@ const config: webpack.Configuration = {
     resolve: {
         extensions: ['.mjs', '.ts', '.tsx', '.js'],
         mainFields: ['es2015', 'module', 'browser', 'main'],
-        alias: rxPaths(),
+        alias: { ...rxPaths(), '@sourcegraph/webapp/dist': path.join(__dirname, 'src') },
     },
     module: {
         rules: [
             ((): webpack.RuleSetRule => ({
                 test: /\.tsx?$/,
-                include: path.resolve(__dirname, 'src'),
-                use: [{ loader: 'thread-loader', options: workerPool }, babelLoader, typescriptLoader],
+                include: [path.resolve(__dirname, 'src'), path.resolve(__dirname, 'enterprise', 'src')],
+                use: [babelLoader, typescriptLoader],
             }))(),
             ((): webpack.RuleSetRule => ({
                 test: /\.m?js$/,
-                use: [{ loader: 'thread-loader', options: workerPool }, babelLoader, typescriptLoader],
+                use: [babelLoader, typescriptLoader],
             }))(),
             {
                 test: /\.mjs$/,
@@ -117,10 +121,6 @@ const config: webpack.Configuration = {
                 test: /\.(css|sass|scss)$/,
                 exclude: [...monacoEditorPaths, /graphiql/],
                 use: ExtractTextPlugin.extract([
-                    {
-                        loader: 'thread-loader',
-                        options: workerPoolSCSS,
-                    },
                     {
                         loader: 'css-loader',
                         options: {
@@ -144,7 +144,7 @@ const config: webpack.Configuration = {
                 // CSS rule for monaco-editor and other external plain CSS (skip SASS and PostCSS for build perf)
                 test: /\.css$/,
                 include: monacoEditorPaths,
-                use: [{ loader: 'thread-loader', options: workerPool }, 'style-loader', 'css-loader'],
+                use: ['style-loader', 'css-loader'],
             }))(),
         ],
     },
