@@ -30,7 +30,9 @@ const babelLoader: webpack.RuleSetUseItem = {
     },
 }
 
-const srcRoot = process.env.ENTERPRISE ? path.join(__dirname, 'enterprise', 'src') : path.join(__dirname, 'src')
+const isEnterpriseBuild = !!process.env.ENTERPRISE
+const srcRoot = isEnterpriseBuild ? path.join(__dirname, 'enterprise', 'src') : path.join(__dirname, 'src')
+console.log(srcRoot)
 
 const typescriptLoader: webpack.RuleSetUseItem = {
     loader: 'ts-loader',
@@ -62,10 +64,11 @@ const config: webpack.Configuration = {
         ],
     },
     entry: {
-        app: path.join(srcRoot, 'main.tsx'),
-        // TODO(sqs): uncomment
-        //
-        // style: path.join(__dirname, 'src/main.scss'),
+        // app: path.join(srcRoot, 'main.tsx'),
+        style: [
+            // path.join(__dirname, 'src', 'main.scss'),
+            isEnterpriseBuild ? path.join(__dirname, 'enterprise', 'src', 'main.scss') : null,
+        ].filter((path): path is string => !!path),
         // 'editor.worker': 'monaco-editor/esm/vs/editor/editor.worker.js',
         // 'json.worker': 'monaco-editor/esm/vs/language/json/json.worker',
     },
@@ -97,7 +100,7 @@ const config: webpack.Configuration = {
     resolve: {
         extensions: ['.mjs', '.ts', '.tsx', '.js'],
         mainFields: ['es2015', 'module', 'browser', 'main'],
-        alias: { ...rxPaths(), '@sourcegraph/webapp/dist': path.join(__dirname, 'src') },
+        alias: rxPaths(),
     },
     module: {
         rules: [

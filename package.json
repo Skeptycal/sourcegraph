@@ -1,5 +1,4 @@
 {
-  "name": "@sourcegraph/webapp",
   "private": true,
   "version": "1.10.1",
   "description": "The Sourcegraph web app",
@@ -8,10 +7,6 @@
     "type": "git",
     "url": "https://github.com/sourcegraph/sourcegraph"
   },
-  "files": [
-    "dist",
-    "ui/assets/img"
-  ],
   "engines": {
     "node": ">=8.0.0 <11.0.0",
     "yarn": "^1.10.1"
@@ -22,16 +17,14 @@
     "test": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' mocha --require ts-node/register --require src/util/long-stack-traces.ts --timeout 10000 'src/**/*.test.ts?(x)'",
     "cover": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' nyc --require ts-node/register mocha --timeout 10000 './src/**/*.test.ts?(x)'",
     "test-e2e": "cross-env OVERRIDE_AUTH_SECRET=sSsNGlI8fBDftBz0LDQNXEnP6lrWdt9g0fK6hoFvGQ TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' mocha --require ts-node/register --require ./src/util/long-stack-traces.ts --timeout 60000 --slow 5000 --exit './src/**/*.test.e2e.ts?(x)'",
-    "test-e2e-sgdev": "env OVERRIDE_AUTH_SECRET=${SGDEV_OVERRIDE_AUTH_SECRET} TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' mocha --require ts-node/register --require esm --require @sourcegraph/webapp/dist/util/long-stack-traces --timeout 60000 --slow 5000 --exit './src/**/*.test.e2e.ts?(x)'",
+    "test-e2e-sgdev": "env OVERRIDE_AUTH_SECRET=${SGDEV_OVERRIDE_AUTH_SECRET} TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' mocha --require ts-node/register --require esm --require ./src/util/long-stack-traces --timeout 60000 --slow 5000 --exit './src/**/*.test.e2e.ts?(x)'",
     "build": "cross-env NODE_OPTIONS=\"--max_old_space_size=4096\" gulp build",
     "watch": "cross-env NODE_OPTIONS=\"--max_old_space_size=4096\" gulp watch",
     "watch-webpack": "cross-env NODE_OPTIONS=\"--max_old_space_size=4096\" gulp watchWebpack",
-    "dist": "cross-env NODE_OPTIONS=\"--max_old_space_size=4096\" gulp dist",
     "webpack": "cross-env NODE_OPTIONS=\"--max_old_space_size=4096\" gulp webpack",
     "graphql": "gulp graphQLTypes",
     "schema": "gulp schema",
     "watch-schema": "gulp watchSchema",
-    "release": "gulp release",
     "lint": "yarn run tslint && gulp unusedExports && yarn run stylelint",
     "tslint": "tslint -t stylish -c tslint.json -p tsconfig.json -e 'src/schema/**' 'src/**/*.ts?(x)' 'types/**/*.ts?(x)' './*.ts?(x)'",
     "stylelint": "stylelint --quiet 'src/**/*.scss'",

@@ -1,6 +1,5 @@
 import { generateNamespace } from '@gql2ts/from-schema'
 import { DEFAULT_OPTIONS, DEFAULT_TYPE_MAP } from '@gql2ts/language-typescript'
-import execa from 'execa'
 import log from 'fancy-log'
 import globby from 'globby'
 import { buildSchema, graphql, introspectionQuery, IntrospectionQuery } from 'graphql'
@@ -9,13 +8,11 @@ import httpProxyMiddleware from 'http-proxy-middleware'
 import { compile as compileJSONSchema } from 'json-schema-to-typescript'
 // @ts-ignore
 import convert from 'koa-connect'
-import latestVersion from 'latest-version'
 import mkdirp from 'mkdirp-promise'
 import { readFile, stat, writeFile } from 'mz/fs'
 import * as path from 'path'
 import PluginError from 'plugin-error'
 import { format, resolveConfig } from 'prettier'
-import * as semver from 'semver'
 // ironically, has no published typings (but will soon)
 // @ts-ignore
 import tsUnusedExports from 'ts-unused-exports'
@@ -237,33 +234,3 @@ export const watch = gulp.series(
     gulp.parallel(schema, graphQLTypes),
     gulp.parallel(watchSchema, watchGraphQLTypes, webpackServe, watchPhabricator)
 )
-
-/**
- * Publishes a new version of @sourcegraph/webapp to npm.
- * Gets the last release from the npm registry, increases the patch version, writes it to package.json and publishes the package.
- * It is not a goal to parse commit messages or follow semantic versioning - every commit gets released as a 0.0.x release.
- * No git tags or GitHub releases are created.
- */
-export async function release(): Promise<void> {
-    const packageJson = require('./package.json')
-    try {
-        const currentVersion = await latestVersion(packageJson.name)
-        log(`Current version is ${currentVersion}`)
-        packageJson.version = semver.inc(currentVersion, 'patch')
-    } catch (err) {
-        if (/doesn't exist/.test(err.message)) {
-            log('Package is not released yet')
-            packageJson.version = '0.0.0'
-        } else {
-            throw err
-        }
-    }
-    log(`New version is ${packageJson.version}`)
-    if (!process.env.CI) {
-        log('Not running in CI, aborting')
-        return
-    }
-    await writeFile(__dirname + '/package.json', JSON.stringify(packageJson, null, 2))
-    await execa('npm', ['publish'], { stdio: 'inherit' })
-    await execa('buildkite-agent', ['meta-data', 'set', 'oss-webapp-version', packageJson.version])
-}
